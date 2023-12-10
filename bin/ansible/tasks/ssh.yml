@@ -1,0 +1,84 @@
+- name: Ensure .ssh directory exists.
+  file:
+    dest: "{{ lookup('env', 'HOME') }}/.ssh"
+    mode: 0700
+    state: directory
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Install ssh key (GitLab)
+  copy:
+    src: "{{ gitlab_source_key }}"
+    dest: "{{ gitlab_dest_key }}"
+    mode: 0600
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Install ssh key public (GitLab)
+  copy:
+    src: "{{ gitlab_source_key }}.pub"
+    dest: "{{ gitlab_dest_key }}.pub"
+    mode: 0644
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Install ssh key (GitHub)
+  copy:
+    src: "{{ github_source_key }}"
+    dest: "{{ github_dest_key }}"
+    mode: 0600
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Install ssh key public (GitHub)
+  copy:
+    src: "{{ github_source_key }}.pub"
+    dest: "{{ github_dest_key }}.pub"
+    mode: 0644
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Ensure .ssh config exists.
+  file:
+    dest: "{{ lookup('env', 'HOME') }}/.ssh/config"
+    mode: 0600
+    state: touch
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Update SSH config (GitLab)
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.ssh/config"
+    line: |
+      # GitLab
+      Host gitlab.com
+      HostName gitlab.com
+      IdentityFile {{ gitlab_dest_key }}
+      User {{ lookup('env', 'USER') }}
+      IdentitiesOnly yes
+  when: "gitlab_dest_key not in lookup('file', lookup('env', 'HOME') + '/.ssh/config')"
+  tags:
+    - dotfiles
+    - install
+    - ssh
+- name: Update SSH config (GitHub)
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.ssh/config"
+    line: |
+      # GitHub
+      Host github.com
+      HostName github.com
+      IdentityFile {{ github_dest_key }}
+      User {{ lookup('env', 'USER') }}
+      IdentitiesOnly yes
+  when: "github_dest_key not in lookup('file', lookup('env', 'HOME') + '/.ssh/config')"
+  tags:
+    - dotfiles
+    - install
+    - ssh

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+# Install ansible
+if ! command -v ansible &> /dev/null; then
+  # sudo dnf update -y
+  sudo dnf install ansible -y
+fi
+
+# Install git
+if ! command -v git &> /dev/null; then
+  # sudo dnf update -y
+  sudo dnf install git-all -y
+fi
+
+# Clone .dotfiles 
+git clone https://github.com/nlulic/.dotfiles.git 
+status=$?
+
+if [ $status -ne 0 ]; then
+    echo "Failed to clone dotfiles"
+    exit $status
+fi
