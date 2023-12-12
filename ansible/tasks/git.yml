@@ -1,0 +1,23 @@
+- name: GitHub setup email
+  git_config:
+    name: user.email
+    scope: global
+    value: "{{ github_git_email }}"
+  tags:
+  - git-github
+- name: GitLab setup email
+  git_config:
+    name: user.email
+    scope: global
+    value: "{{ gitlab_git_email }}"
+  tags:
+  - git-gitlab
+- name: Git setup name
+  git_config:
+    name: user.name
+    scope: global
+    value: "{{ git_name }}"
+  tags:
+  - git-github
+  - git-gitlab
+  - git
