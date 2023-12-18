@@ -1,0 +1,68 @@
+- name: Install Node
+  become: true
+  dnf:
+    name: nodejs
+    state: latest
+  when: "ansible_os_family == 'RedHat'"
+  tags:
+    - install
+    - node
+
+- name: Create .npm-global directory
+  file:
+    dest: "{{ lookup('env', 'HOME') }}/.local/.npm-global"
+    mode: 0700
+    state: directory
+  tags:
+    - install
+    - node
+
+- name: NPM set prefix
+  shell: npm config set prefix '~/.local/.npm-global'
+  tags:
+  - install
+  - node
+
+- name: Set path in .bash_profile
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.bash_profile"
+    line: export PATH={{ lookup('env', 'HOME') }}/.local/.npm-global/bin:$PATH
+  when: "ansible_os_family == 'RedHat'"
+  tags:
+    - install
+    - node
+
+- name: Install N
+  npm:
+    name: n
+    global: yes
+  tags:
+    - install
+    - node
+
+- name: Set N prefix
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.bash_profile"
+    line: export N_PREFIX="$HOME/.local/n"
+  when: "ansible_os_family == 'RedHat'"
+  tags:
+    - install
+    - node
+
+- name: Update Node path
+  lineinfile:
+    path: "{{ lookup('env', 'HOME') }}/.bash_profile"
+    line: export PATH={{ lookup('env', 'HOME') }}/.local/n/bin:$PATH
+  when: "ansible_os_family == 'RedHat'"
+  tags:
+    - install
+    - node
+
+- name: Install Node 20
+  shell: source {{ lookup('env', 'HOME') }}/.bash_profile && n 14
+  args: 
+    executable: /bin/bash
+  when: "ansible_os_family == 'RedHat'"
+  tags:
+    - install
+    - node
