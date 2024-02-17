@@ -1,0 +1,3 @@
+[submodule "adesso"]
+	path = adesso
+	url = git@github.com:nlulic/.dotfiles-adesso.git
