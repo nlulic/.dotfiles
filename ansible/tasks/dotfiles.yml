@@ -1,0 +1,22 @@
+- name: Installing stow
+  become: true
+  dnf:
+    name: stow
+    state: latest
+  when: "ansible_os_family == 'RedHat'"
+  tags:
+    - install
+    - dotfiles
+    - stow
+- name: Stow dotfiles
+  ansible.builtin.command:
+    cmd: stow --dir={{ stow_dir }} --target={{ lookup('env', 'HOME' ) }} --verbose=2 {{ item }}
+  with_items: 
+    - git
+    - scripts
+  register: result
+  changed_when: 'result.stderr is search("LINK: ")'
+  tags:
+    - install
+    - dotfiles
+    - stow
